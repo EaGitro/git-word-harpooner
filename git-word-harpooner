@@ -1,0 +1,39 @@
+#!/bin/sh
+
+args=$@
+
+eargs=""
+
+abspath_root="$(git rev-parse --show-toplevel)/"
+
+
+for i in $args; do
+  eargs="$eargs -e $i "
+done
+
+
+stagedfiles=$(git ls-files)
+
+
+searchpath_groups=""
+
+cnt=0
+
+flag=0
+
+for i in $stagedfiles; do
+  if test $cnt -gt 10 ; then
+    grep $eargs $searchpath_groups && flag=1;
+  fi
+  searchpath_groups="$searchpath_groups $i"
+  cnt=$((cnt+1))
+done
+
+if test $flag -eq 1 ; then
+  return 1
+else
+  return 0
+fi
+
+
+
